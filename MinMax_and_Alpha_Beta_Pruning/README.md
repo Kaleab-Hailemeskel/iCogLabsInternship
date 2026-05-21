@@ -20,24 +20,35 @@ Both scripts utilize **backtracking state management**. Instead of copying the b
   * **$\beta$ (Beta):** The upper bound—the minimum score the Minimizer (Opponent) is already assured of.
 * **Pruning Logic:** Whenever a branch returns a value where $\beta \le \alpha$, the loop executes an immediate `break` statement. This truncates the remaining search paths safely, because an optimal opponent would avoid this branch entirely.
 
-### Quantitative Efficiency Metrics
-When evaluating both engines from a completely vacant board state (Turn 1), the absolute choice of move remains completely unchanged, but the reduction in computational overhead is significant:
+---
 
-| Metric Evaluation | Standard Minimax | Alpha-Beta Pruning | Performance Optimization |
+## 2. Empirical Performance Optimization Analysis
+
+To measure the real-world efficiency gains of Alpha-Beta Pruning over plain Minimax, both algorithms were executed from an empty root board state ($3 \times 3$ grid) on Turn 1 to track the total number of states visited (`node_count`).
+
+While both algorithms are mathematically guaranteed to return the **exact same optimal move vector**, Alpha-Beta Pruning introduces a massive computational reduction by dynamically eliminating irrelevant branches.
+
+### Node Evaluation Comparison
+
+| Performance Metric | Standard Minimax | Alpha-Beta Pruning | Empirical Savings / Reduction |
 | :--- | :--- | :--- | :--- |
-| **Nodes Checked (Turn 1)** | **549,946** | **18,297** | **~96.7% reduction** in search space |
-| **Move Decision Accuracy** | 100% Optimal | 100% Optimal | Zero loss in precision |
+| **Total Nodes Evaluated (Turn 1)** | **549,946** | **18,297** | **531,649 nodes skipped** |
+| **Search Space Traversed** | 100% | ~3.33% | **96.67% of tree pruned** |
+| **Execution Accuracy** | 100% Optimal | 100% Optimal | No loss in precision |
+
+### Why the Optimization is Crucial
+Standard Minimax operates at a computational complexity of $O(b^d)$. In a simple game like Tic-Tac-Toe, a modern CPU can handle half a million node evaluations in a fraction of a second. However, as the branching factor $b$ and depth $d$ scale upward (e.g., Chess or Connect Four), the state-space size scales exponentially. 
+
+By dropping the total nodes visited on the very first turn from over **549,000 down to just 18,297**, Alpha-Beta Pruning demonstrates how effective boundary logic is at containing state-space explosions without reducing the intelligence or accuracy of the AI.
 
 ---
 
-## 2. Advanced Decision-Making Frameworks
+## 3. Advanced Decision-Making Frameworks
 
 While Minimax and Alpha-Beta Pruning function exceptionally well within small, deterministic environments, they fail to scale when games feature hidden information, random elements, or massive branching factors (such as Chess or Go). Below is an analysis of alternative search frameworks.
 
 ### A. Monte Carlo Tree Search (MCTS)
 Unlike Minimax, which explores states uniformly layer-by-layer, MCTS relies on **statistical sampling** and randomized rollouts. It constructs an asymmetric tree, prioritizing computing power toward highly favorable moves while balancing raw exploration.
-
-
 
 MCTS runs continuously through four distinct recursive steps:
 1. **Selection:** Starting at the root, the engine navigates down existing child nodes using a selection policy formula, typically **UCB1 (Upper Confidence Bound)**. This equation balances *exploitation* (choosing paths with high known win rates) against *exploration* (visiting rarely checked states).
@@ -58,7 +69,7 @@ Instead of outputting a single string of specific moves, solving an MDP calculat
 
 ---
 
-## 3. Structural Comparison Matrix
+## 4. Structural Comparison Matrix
 
 | Feature | Minimax / Alpha-Beta | Monte Carlo Tree Search (MCTS) | Markov Decision Process (MDP) |
 | :--- | :--- | :--- | :--- |
