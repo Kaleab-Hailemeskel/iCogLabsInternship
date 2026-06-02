@@ -56,9 +56,12 @@ Contains the `AlphaBetaPruning` class.
 The interactive script that ties everything together.
 
 #### Execution Flow:
-1.  Prompts the user to select an AI opponent (MCTS or Alpha-Beta).
-2.  Enters a `while True` loop.
-3.  If it's the Human's turn (Player 1), it takes console input.
-4.  If it's the AI's turn (Player 2), it calls `ai.best_move()`.
-5.  Checks for a winner or draw after every move.
-6.  Switches players and repeats until the game concludes.
+1.  **Player Selection**: Prompts the user to select the type for both Player 1 and Player 2. Available types are:
+    - **Human**: Manual input via console.
+    - **Monte Carlo Tree Search**: AI using random simulations.
+    - **Alpha-Beta Pruning**: AI using depth-limited minimax search.
+2.  **Game Loop**:
+    - If a player is **Human**, it waits for column input (0-6).
+    - If a player is an **AI**, it calculates the best move automatically.
+    - For **AI vs AI** matches, a 1-second delay is added between moves for visibility.
+3.  **Completion**: Detects wins or draws, prints the final board, and exits.
